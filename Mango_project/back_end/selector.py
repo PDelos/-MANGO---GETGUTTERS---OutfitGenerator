@@ -244,15 +244,3 @@ class Selector:
         - DataFrame with product data
         """
         return self._DFproduct
-
-products = {
-    'Sweater': [0, 0, 0],
-    'Trousers': [255, 0, 0]
-}
-profile = {
-  "gender": "Female",
-  "age": 25
-}
-
-selector = Selector()
-print(selector.get_closest_product(products, profile))
