@@ -1,10 +1,9 @@
 from PIL import Image
 import pandas as pd
-import numpy as nps
+import numpy as np
 from typing import TypeAlias, Any
+import random
 
-
-color_mapping = { 'OFFWHITE': (255, 255, 255), 'TEJANO OSCURO': (25, 25, 112), 'ROSA PASTEL': (255, 182, 193), 'MOSTAZA': (255, 255, 0), 'ROJO': (255, 0, 0), 'GRIS MEDIO VIGORE': (128, 128, 128), 'CARAMELO': (210, 105, 30), 'KHAKI': (240, 230, 140), 'GRIS OSCURO VIGORE': (40, 40, 40), 'CRUDO': (255, 235, 205), 'FRESA': (255, 0, 128), 'BEIGE': (245, 245, 220), 'CHOCOLATE': (139, 69, 19), 'NEGRO': (0, 0, 0), 'ROSA PALO': (255, 192, 203), 'TEJANO MEDIO': (70, 130, 180), 'AMARILLO': (255, 255, 0), 'BLANCO': (255, 255, 255), 'ARENA': (194, 178, 128), 'MORADO': (128, 0, 128), 'MARRON': (165, 42, 42), 'AZUL': (0, 0, 255), 'AGUA': (0, 255, 255), 'NAVY': (0, 0, 128), 'TEJANO GRIS OSCURO': (169, 169, 169), 'CAMEL': (193, 154, 107), 'VERDE': (0, 128, 0), 'ROSA': (255, 0, 255), 'FUCSIA': (255, 0, 255), 'GRIS CLARO VIGORE': (192, 192, 192), 'CUERO': (139, 69, 19), 'VISON': (184, 134, 11), 'TEJANO CLARO': (135, 206, 250), 'PLATA': (192, 192, 192), 'GRIS': (128, 128, 128), 'NUDE': (255, 222, 173), 'ORO': (255, 215, 0), 'TURQUESA': (64, 224, 208), 'TEJANO NEGRO': (0, 0, 0), 'NARANJA': (255, 165, 0), 'DIRTY': (30, 144, 255), 'HIELO': (176, 224, 230), 'CELESTE': (173, 216, 230), 'BURDEOS': (128, 0, 32), 'AMARILLO FLUOR': (255, 255, 0), 'PIEDRA': (105, 105, 105), 'MALVA': (221, 160, 221), 'ROSA LIGHT': (255, 182, 193), 'MARINO': (0, 0, 128), 'MANDARINA': (255, 165, 0), 'TERRACOTA': (204, 78, 92), 'CALDERO': (139, 69, 19), 'GRANATE': (128, 0, 0), 'TOPO': (135, 125, 115), 'VERDE PASTEL': (152, 251, 152), 'AZUL NOCHE': (25, 25, 112), 'MISTERIO': (112, 138, 144), 'LIMA': (0, 255, 0), 'COFFEE': (165, 42, 42), 'PERLA': (240, 240, 240), 'ESMERALDA': (0, 201, 87), 'OCRE': (204, 119, 34), 'VIOLETA': (238, 130, 238), 'VINO': (128, 0, 0), 'MARFIL': (255, 255, 240), 'BOTELLA': (0, 128, 0), 'ANTRACITA': (51, 51, 51), 'PEACH': (255, 218, 185), 'VAINILLA': (245, 222, 179), 'TABACO': (128, 78, 40), 'ELECTRICO': (125, 249, 255), 'AMARILLO PASTEL': (255, 255, 153), 'PORCELANA': (240, 240, 240), 'TAUPE': (72, 60, 50), 'COBRE': (184, 115, 51), 'CANELA': (210, 105, 30), 'PETROLEO': (0, 128, 128), 'CORAL': (255, 127, 80), 'LILA': (200, 162, 200), 'COGNAC': (143, 89, 34), 'OLIVA': (128, 128, 0), 'MENTA': (152, 255, 152), 'TEJANO GRIS CLARO': (192, 192, 192), 'TEJANO GRIS': (128, 128, 128), 'DIRTY OSCURO': (34, 49, 63), 'BLEACH': (255, 252, 220), 'NARANJA PASTEL': (255, 223, 186), 'CAZA': (139, 69, 19), 'BLOOD': (102, 0, 0), 'CEREZA': (222, 49, 99), 'CENIZA': (192, 192, 192), 'CURRY': (205, 185, 125), 'BLUEBLACK': (0, 0, 139), 'SALMON': (250, 128, 114), 'CHICLE': (255, 182, 193), 'TEJANO SOFT': (112, 128, 144), 'GUNMETAL': (42, 52, 57), 'MANZANA': (50, 205, 50), 'BILLAR': (0, 100, 0), 'MUSGO': (173, 223, 173), 'TINTA': (0, 0, 0), 'INDIGO': (75, 0, 130), 'ROSA FLUOR': (255, 20, 147), 'DIRTY CLARO': (220, 220, 220), 'CIRUELA': (139, 0, 139), 'BERMELLON': (227, 66, 52), 'GERANIO': (201, 0, 22), 'PIMENTON': (153, 0, 0), 'PRUSIA': (0, 49, 83), 'ASFALTO': (47, 79, 79),}
 Identifier = str
 Link = str
 
@@ -23,6 +22,8 @@ class Selector:
         """
         Initializes the Selector object by loading outfit and product data from CSV files.
         """
+        color_mapping = { 'OFFWHITE': (255, 255, 255), 'TEJANO OSCURO': (25, 25, 112), 'ROSA PASTEL': (255, 182, 193), 'MOSTAZA': (255, 255, 0), 'ROJO': (255, 0, 0), 'GRIS MEDIO VIGORE': (128, 128, 128), 'CARAMELO': (210, 105, 30), 'KHAKI': (240, 230, 140), 'GRIS OSCURO VIGORE': (40, 40, 40), 'CRUDO': (255, 235, 205), 'FRESA': (255, 0, 128), 'BEIGE': (245, 245, 220), 'CHOCOLATE': (139, 69, 19), 'NEGRO': (0, 0, 0), 'ROSA PALO': (255, 192, 203), 'TEJANO MEDIO': (70, 130, 180), 'AMARILLO': (255, 255, 0), 'BLANCO': (255, 255, 255), 'ARENA': (194, 178, 128), 'MORADO': (128, 0, 128), 'MARRON': (165, 42, 42), 'AZUL': (0, 0, 255), 'AGUA': (0, 255, 255), 'NAVY': (0, 0, 128), 'TEJANO GRIS OSCURO': (169, 169, 169), 'CAMEL': (193, 154, 107), 'VERDE': (0, 128, 0), 'ROSA': (255, 0, 255), 'FUCSIA': (255, 0, 255), 'GRIS CLARO VIGORE': (192, 192, 192), 'CUERO': (139, 69, 19), 'VISON': (184, 134, 11), 'TEJANO CLARO': (135, 206, 250), 'PLATA': (192, 192, 192), 'GRIS': (128, 128, 128), 'NUDE': (255, 222, 173), 'ORO': (255, 215, 0), 'TURQUESA': (64, 224, 208), 'TEJANO NEGRO': (0, 0, 0), 'NARANJA': (255, 165, 0), 'DIRTY': (30, 144, 255), 'HIELO': (176, 224, 230), 'CELESTE': (173, 216, 230), 'BURDEOS': (128, 0, 32), 'AMARILLO FLUOR': (255, 255, 0), 'PIEDRA': (105, 105, 105), 'MALVA': (221, 160, 221), 'ROSA LIGHT': (255, 182, 193), 'MARINO': (0, 0, 128), 'MANDARINA': (255, 165, 0), 'TERRACOTA': (204, 78, 92), 'CALDERO': (139, 69, 19), 'GRANATE': (128, 0, 0), 'TOPO': (135, 125, 115), 'VERDE PASTEL': (152, 251, 152), 'AZUL NOCHE': (25, 25, 112), 'MISTERIO': (112, 138, 144), 'LIMA': (0, 255, 0), 'COFFEE': (165, 42, 42), 'PERLA': (240, 240, 240), 'ESMERALDA': (0, 201, 87), 'OCRE': (204, 119, 34), 'VIOLETA': (238, 130, 238), 'VINO': (128, 0, 0), 'MARFIL': (255, 255, 240), 'BOTELLA': (0, 128, 0), 'ANTRACITA': (51, 51, 51), 'PEACH': (255, 218, 185), 'VAINILLA': (245, 222, 179), 'TABACO': (128, 78, 40), 'ELECTRICO': (125, 249, 255), 'AMARILLO PASTEL': (255, 255, 153), 'PORCELANA': (240, 240, 240), 'TAUPE': (72, 60, 50), 'COBRE': (184, 115, 51), 'CANELA': (210, 105, 30), 'PETROLEO': (0, 128, 128), 'CORAL': (255, 127, 80), 'LILA': (200, 162, 200), 'COGNAC': (143, 89, 34), 'OLIVA': (128, 128, 0), 'MENTA': (152, 255, 152), 'TEJANO GRIS CLARO': (192, 192, 192), 'TEJANO GRIS': (128, 128, 128), 'DIRTY OSCURO': (34, 49, 63), 'BLEACH': (255, 252, 220), 'NARANJA PASTEL': (255, 223, 186), 'CAZA': (139, 69, 19), 'BLOOD': (102, 0, 0), 'CEREZA': (222, 49, 99), 'CENIZA': (192, 192, 192), 'CURRY': (205, 185, 125), 'BLUEBLACK': (0, 0, 139), 'SALMON': (250, 128, 114), 'CHICLE': (255, 182, 193), 'TEJANO SOFT': (112, 128, 144), 'GUNMETAL': (42, 52, 57), 'MANZANA': (50, 205, 50), 'BILLAR': (0, 100, 0), 'MUSGO': (173, 223, 173), 'TINTA': (0, 0, 0), 'INDIGO': (75, 0, 130), 'ROSA FLUOR': (255, 20, 147), 'DIRTY CLARO': (220, 220, 220), 'CIRUELA': (139, 0, 139), 'BERMELLON': (227, 66, 52), 'GERANIO': (201, 0, 22), 'PIMENTON': (153, 0, 0), 'PRUSIA': (0, 49, 83), 'ASFALTO': (47, 79, 79),}
+
         self._DFoutfit = pd.read_csv('../dataset/outfit_data.csv')
         self._DFproduct = pd.read_csv('../dataset/product_data.csv')
         self._DFproduct['RGB'] = self._DFproduct['des_color_specification_esp'].map(color_mapping)
@@ -157,7 +158,7 @@ class Selector:
         Parameters:
         - outf_id: Outfit identifier
         """
-        products: list[Identifier] = self.get_outfit(outf_id)
+        products: list[Identifier] = self.get_outfit_composition(outf_id)
         jpg_paths: list[str] = [self.get_product_image(prod_id) for prod_id in products]
         images: list = [Image.open(path) for path in jpg_paths]
 
@@ -175,13 +176,15 @@ class Selector:
             current_width += img.width
 
         # Save the collage
-        collage.save("../dataset/outfits/" + str(outf_id) + ".png")
+        collage.save("../dataset/" + str(outf_id) + ".jpg")
+        return
     
     def get_closest_product(self, products: dict[str, list], profile: dict[str, str|int]) -> list[None|str]:
         closest_products: list[None|str] = list()
         threshold = 1.41
         #change age into either adult or child
-        profile['age'] = 'Kids' if profile['age'] < 15 else 'Adult'
+        if type(profile['age']) == int:
+            profile['age'] = 'Kids' if profile['age'] < 15 else 'Adult'
         
         for product_type, target_rgb in products.items(): #falta dterminar distancia maxima
             filtered_rows: pd.DataFrame = self.DF_products().copy()[
@@ -199,14 +202,59 @@ class Selector:
         
         return closest_products
     
-    def get_possibilitis(self, products: dict[str, list], profile: dict[str, str|int]) -> None:
+    def compatible_products(self, id_1:str, id_2:str) -> bool:
+        if id_1 == id_2: return False
+        classification = {'Trousers': ['bottom'], 'Jeans': ['bottom'],'Dresses': ['top', 'bottom'],'Shirt': ['top'],'Sweater': ['jacket'],'Skirts': ['bottom'],'Jewellery': ['accessories'],'Bags': ['accessories'],'Glasses': ['accessories'],'Wallets & cases': ['accessories'],'Shorts': ['bottom'],'Tops': ['top'],'Belts and Ties': ['accessories'],'Jumpsuit': ['top', 'bottom'],'Jackets': ['jacket'],'Coats': ['jacket'],'Footwear': ['shoes'],'Hats, scarves and gloves': ['hat'],'T-shirt': ['top'],'Blazers': ['jacket'],'Gadgets': ['accessories'],'Swimwear': ['sus'],'Vest': ['top'],'Fragances': ['sus'],'Cardigans': ['jackt'],'Trenchcoats': ['jacket'],'Puffer coats': ['jacket'],'Outer Vest': ['jacket'],'Leggings and joggers': ['bottom'],'Deco Accessories': ['accessories'],'Poloshirts': ['top'],'Intimate': ['sus'],'Sweatshirts': ['jacket'],'Deco Textiles': ['sus'],'Bedding': ['sus'],'Bodysuits': ['top', 'bottom'],'Leather jackets': ['jacket'],'Parkas': ['jacket'],'Glassware': ['sus']} 
+        type_1 = self.get_product_info(id_1)['des_product_family']
+        type_2 = self.get_product_info(id_2)['des_product_family']
+        
+        if 'sus' in classification[type_1] or 'sus' in classification[type_2] : return False
+        if 'accessories' in classification[type_1] or 'accessories' in classification[type_2]: return True
+        intersection = set(classification[type_1]) & set(classification[type_2])
+        return True if len(intersection) == 0  else False
+        
+    def get_possibilities_products(self, products: dict[str, list], profile: dict[str, str|int]) -> list[str]:
         selection: list[str|None] = self.get_closest_product(products,profile)
-        if None is in selection: print("GET GUTTER")
-        else:
-            outfit_selection = self.get_outfits_with(selection)
-            all_products = [self.get_outfit_composition(id) for id in outfit_selection]
-            show
+        if len(selection) == 0: 
+            filtered_rows: pd.DataFrame = self.DF_products().copy()[
+                (self.DF_products()['des_sex'] == profile['gender']) &
+                (self.DF_products()['des_age'] == profile['age'])
+            ]
+            selection = [filtered_rows['cod_modelo_color'].sample(n=1).iloc[0]]
+    
+        n = len(selection)
+        for i in range(n):
+            for j in range(i + 1, n):
+                if not self.compatible_products(selection[i], selection[j]):
+                    return list()
+        
+        
+        nested_list = [self.get_outfit_composition(outf_id) for outf_id in self.get_outfits_with(selection)]
+        possible_products = [value for sublist in nested_list for value in sublist]
+        
+        #from possible products delete all that conflict with outfit
+        possible_products[:] = [id_2 for id_2 in possible_products if all(self.compatible_products(id_1, id_2) for id_1 in selection)]
+        return possible_products
+    
+    
+    def prediction(self,, products: dict[str, list], profile: dict[str, str|int]) -> list[str]:
+        classification = {'Trousers': ['bottom'], 'Jeans': ['bottom'],'Dresses': ['top', 'bottom'],'Shirt': ['top'],'Sweater': ['jacket'],'Skirts': ['bottom'],'Jewellery': ['accessories'],'Bags': ['accessories'],'Glasses': ['accessories'],'Wallets & cases': ['accessories'],'Shorts': ['bottom'],'Tops': ['top'],'Belts and Ties': ['accessories'],'Jumpsuit': ['top', 'bottom'],'Jackets': ['jacket'],'Coats': ['jacket'],'Footwear': ['shoes'],'Hats, scarves and gloves': ['hat'],'T-shirt': ['top'],'Blazers': ['jacket'],'Gadgets': ['accessories'],'Swimwear': ['sus'],'Vest': ['top'],'Fragances': ['sus'],'Cardigans': ['jackt'],'Trenchcoats': ['jacket'],'Puffer coats': ['jacket'],'Outer Vest': ['jacket'],'Leggings and joggers': ['bottom'],'Deco Accessories': ['accessories'],'Poloshirts': ['top'],'Intimate': ['sus'],'Sweatshirts': ['jacket'],'Deco Textiles': ['sus'],'Bedding': ['sus'],'Bodysuits': ['top', 'bottom'],'Leather jackets': ['jacket'],'Parkas': ['jacket'],'Glassware': ['sus']} 
 
+        outfit: list[str] = self.get_closest_product(products,profile)
+        products: list[str] = self.get_possibilities_products(products,profile)
+        avg = dict[str, str] #bottom, top, shoes
+        
+        for id in outfit:
+            if len(set(classification[id]) & ('top', 'shoes', 'bottom')) > 0:
+                for type_prod in classification[id]:
+                    avg[type_prod] = id
+        
+        
+        outfit ['top', 'shoes', 'bottom']
+        bottoms: list[str]
+        tops: list[str]
+        shoes: list[str]
+    
     # ###############################   GETTERS  #######################################
     
     def DF_outfits(self) -> pd.DataFrame:
@@ -226,3 +274,13 @@ class Selector:
         - DataFrame with product data
         """
         return self._DFproduct
+
+products = {
+}
+profile = {
+  "gender": "Female",
+  "age": 25
+}
+
+selector = Selector()
+print(selector.get_possibilities_products(products, profile))
