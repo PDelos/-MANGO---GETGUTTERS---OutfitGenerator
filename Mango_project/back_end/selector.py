@@ -202,6 +202,7 @@ class Selector:
         
         return closest_products
     
+    
     def compatible_products(self, id_1:str, id_2:str) -> bool:
         if id_1 == id_2: return False
         classification = {'Trousers': ['bottom'], 'Jeans': ['bottom'],'Dresses': ['top', 'bottom'],'Shirt': ['top'],'Sweater': ['jacket'],'Skirts': ['bottom'],'Jewellery': ['accessories'],'Bags': ['accessories'],'Glasses': ['accessories'],'Wallets & cases': ['accessories'],'Shorts': ['bottom'],'Tops': ['top'],'Belts and Ties': ['accessories'],'Jumpsuit': ['top', 'bottom'],'Jackets': ['jacket'],'Coats': ['jacket'],'Footwear': ['shoes'],'Hats, scarves and gloves': ['hat'],'T-shirt': ['top'],'Blazers': ['jacket'],'Gadgets': ['accessories'],'Swimwear': ['sus'],'Vest': ['top'],'Fragances': ['sus'],'Cardigans': ['jackt'],'Trenchcoats': ['jacket'],'Puffer coats': ['jacket'],'Outer Vest': ['jacket'],'Leggings and joggers': ['bottom'],'Deco Accessories': ['accessories'],'Poloshirts': ['top'],'Intimate': ['sus'],'Sweatshirts': ['jacket'],'Deco Textiles': ['sus'],'Bedding': ['sus'],'Bodysuits': ['top', 'bottom'],'Leather jackets': ['jacket'],'Parkas': ['jacket'],'Glassware': ['sus']} 
@@ -213,47 +214,16 @@ class Selector:
         intersection = set(classification[type_1]) & set(classification[type_2])
         return True if len(intersection) == 0  else False
         
-    def get_possibilities_products(self, products: dict[str, list], profile: dict[str, str|int]) -> list[str]:
+    def check_user_input(self, products: dict[str, list], profile: dict[str, str|int]) -> True:
         selection: list[str|None] = self.get_closest_product(products,profile)
-        if len(selection) == 0: 
-            filtered_rows: pd.DataFrame = self.DF_products().copy()[
-                (self.DF_products()['des_sex'] == profile['gender']) &
-                (self.DF_products()['des_age'] == profile['age'])
-            ]
-            selection = [filtered_rows['cod_modelo_color'].sample(n=1).iloc[0]]
-    
+        if len(selection) == 0: return True
         n = len(selection)
         for i in range(n):
             for j in range(i + 1, n):
                 if not self.compatible_products(selection[i], selection[j]):
-                    return list()
-        
-        
-        nested_list = [self.get_outfit_composition(outf_id) for outf_id in self.get_outfits_with(selection)]
-        possible_products = [value for sublist in nested_list for value in sublist]
-        
-        #from possible products delete all that conflict with outfit
-        possible_products[:] = [id_2 for id_2 in possible_products if all(self.compatible_products(id_1, id_2) for id_1 in selection)]
-        return possible_products
-    
-    
-    def prediction(self,, products: dict[str, list], profile: dict[str, str|int]) -> list[str]:
-        classification = {'Trousers': ['bottom'], 'Jeans': ['bottom'],'Dresses': ['top', 'bottom'],'Shirt': ['top'],'Sweater': ['jacket'],'Skirts': ['bottom'],'Jewellery': ['accessories'],'Bags': ['accessories'],'Glasses': ['accessories'],'Wallets & cases': ['accessories'],'Shorts': ['bottom'],'Tops': ['top'],'Belts and Ties': ['accessories'],'Jumpsuit': ['top', 'bottom'],'Jackets': ['jacket'],'Coats': ['jacket'],'Footwear': ['shoes'],'Hats, scarves and gloves': ['hat'],'T-shirt': ['top'],'Blazers': ['jacket'],'Gadgets': ['accessories'],'Swimwear': ['sus'],'Vest': ['top'],'Fragances': ['sus'],'Cardigans': ['jackt'],'Trenchcoats': ['jacket'],'Puffer coats': ['jacket'],'Outer Vest': ['jacket'],'Leggings and joggers': ['bottom'],'Deco Accessories': ['accessories'],'Poloshirts': ['top'],'Intimate': ['sus'],'Sweatshirts': ['jacket'],'Deco Textiles': ['sus'],'Bedding': ['sus'],'Bodysuits': ['top', 'bottom'],'Leather jackets': ['jacket'],'Parkas': ['jacket'],'Glassware': ['sus']} 
+                    return False
+        return True
 
-        outfit: list[str] = self.get_closest_product(products,profile)
-        products: list[str] = self.get_possibilities_products(products,profile)
-        avg = dict[str, str] #bottom, top, shoes
-        
-        for id in outfit:
-            if len(set(classification[id]) & ('top', 'shoes', 'bottom')) > 0:
-                for type_prod in classification[id]:
-                    avg[type_prod] = id
-        
-        
-        outfit ['top', 'shoes', 'bottom']
-        bottoms: list[str]
-        tops: list[str]
-        shoes: list[str]
     
     # ###############################   GETTERS  #######################################
     
@@ -276,6 +246,8 @@ class Selector:
         return self._DFproduct
 
 products = {
+    'Sweater': [0, 0, 0],
+    'Trousers': [255, 0, 0]
 }
 profile = {
   "gender": "Female",
@@ -283,4 +255,4 @@ profile = {
 }
 
 selector = Selector()
-print(selector.get_possibilities_products(products, profile))
+print(selector.get_closest_product(products, profile))
